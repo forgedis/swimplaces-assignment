@@ -4,6 +4,7 @@ from .serializers import LocationSerializer
 from django.shortcuts import render
 from django.views.generic.detail import DetailView
 from django.db.models import Count
+from geopy.distance import geodesic
 
 class LocationViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Location.objects.all()
@@ -28,10 +29,15 @@ class LocationViewSet(viewsets.ReadOnlyModelViewSet):
         return render(request, 'locations.html', context)
     
     def statistics(self, request, *args, **kwargs):
+        coex_office = (50.1055756, 14.4789581)
+        distances = [(location, geodesic(coex_office, (location.latitude, location.longitude)).kilometers) for location in Location.objects.all()]
+        most_farthest_locations = [location for location, distance in sorted(distances, key=lambda x: x[1], reverse=True)[:10]]
+
         context = {
             'number_of_locations': Location.objects.count(),
             'categories': Category.objects.exclude(name='').annotate(location_count=Count('location')).order_by('-location_count'),
             'top_10_locations': Location.objects.order_by('-rating')[:10],
+            'most_farthest_locations': most_farthest_locations
         }
 
         return render(request, 'statistics.html', context)
