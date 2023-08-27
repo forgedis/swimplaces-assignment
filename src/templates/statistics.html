@@ -38,7 +38,7 @@
                 <tbody>
                     {% for location in top_10_locations %}
                         <tr>
-                            <td>{{ location.name }}</td>
+                            <td><a href="{% url 'location_detail' location.id %}">{{ location.name }}</a></td>
                             <td>{{ location.rating }}</td>
                         </tr>
                     {% endfor %}

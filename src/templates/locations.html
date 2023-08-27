@@ -29,15 +29,15 @@
             <table class="table table-bordered mt-3">
                 <thead>
                     <tr>
+                        <th>ID</th>
                         <th>Name</th>
-                        <th>Dog Swimming</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for location in location_data %}
                     <tr>
+                        <td>{{ location.id }}</td>
                         <td><a href="{% url 'location_detail' location.id %}">{{ location.name }}</a></td>
-                        <td>{{ location.dog_swimming }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
