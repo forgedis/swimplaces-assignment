@@ -1,23 +1,24 @@
-from django.shortcuts import render
-from rest_framework.views import APIView
+from rest_framework import viewsets, filters
+from src.models import Location
+from .serializers import LocationSerializer
 from rest_framework.response import Response
-from rest_framework import authentication, permissions
-from django.contrib.auth.models import User
 
+class LocationViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['id', 'name', 'dog_swimming']
 
-class LocationViewSet(APIView):
-    """
-    View to list all users in the system.
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
 
-    * Requires token authentication.
-    * Only admin users are able to access this view.
-    """
-    authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAdminUser]
+        dog_swimming_param = self.request.query_params.get('dog_swimming')
 
-    def get(self, request, format=None):
-        """
-        Return a list of all users.
-        """
-        usernames = [user.username for user in User.objects.all()]
-        return Response(usernames)
+        if dog_swimming_param == Location.dog_swimming_choices[0][0]:
+            queryset = queryset.filter(dog_swimming=Location.dog_swimming_choices[0][1])
+
+        if dog_swimming_param == Location.dog_swimming_choices[1][0]:
+            queryset = queryset.filter(dog_swimming=Location.dog_swimming_choices[1][1])
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
