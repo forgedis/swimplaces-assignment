@@ -18,14 +18,11 @@ Including another URLconf
 from src import views
 
 from django.contrib import admin
-from django.urls import include, path
-from rest_framework import routers
-
-router = routers.DefaultRouter()
-router.register(r'locations', views.LocationViewSet)
+from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.LocationViewSet.as_view({'get': 'list'}), name='locations_template'),
     path('location/<int:pk>/', views.LocationDetailView.as_view(), name='location_detail'),
+    path('statistics/', views.LocationViewSet.as_view({'get': 'statistics'}), name='statistics'),
 ]

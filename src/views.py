@@ -1,9 +1,9 @@
 from rest_framework import viewsets, filters
-from src.models import Location
+from src.models import Location, Category
 from .serializers import LocationSerializer
-from rest_framework.response import Response
 from django.shortcuts import render
 from django.views.generic.detail import DetailView
+from django.db.models import Count
 
 class LocationViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Location.objects.all()
@@ -26,6 +26,16 @@ class LocationViewSet(viewsets.ReadOnlyModelViewSet):
         context = {'location_data': serializer.data}
 
         return render(request, 'locations.html', context)
+    
+    def statistics(self, request, *args, **kwargs):
+        context = {
+            'number_of_locations': Location.objects.count(),
+            'categories': Category.objects.exclude(name='').annotate(location_count=Count('location')).order_by('-location_count'),
+            'top_10_locations': Location.objects.order_by('-rating')[:10],
+        }
+
+        return render(request, 'statistics.html', context)
+
     
 class LocationDetailView(DetailView):
     model = Location
