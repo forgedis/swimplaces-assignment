@@ -27,4 +27,5 @@ router.register(r'locations', views.LocationViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.LocationViewSet.as_view({'get': 'list'}), name='locations_template'),
+    path('location/<int:pk>/', views.LocationDetailView.as_view(), name='location_detail'),
 ]

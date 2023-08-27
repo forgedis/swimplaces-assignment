@@ -1,7 +1,9 @@
 from rest_framework import viewsets, filters
 from src.models import Location
 from .serializers import LocationSerializer
+from rest_framework.response import Response
 from django.shortcuts import render
+from django.views.generic.detail import DetailView
 
 class LocationViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Location.objects.all()
@@ -23,4 +25,9 @@ class LocationViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         context = {'location_data': serializer.data}
 
-        return render(request, 'src/locations.html', context)
+        return render(request, 'locations.html', context)
+    
+class LocationDetailView(DetailView):
+    model = Location
+    template_name = 'location_detail.html'
+    context_object_name = 'location'
