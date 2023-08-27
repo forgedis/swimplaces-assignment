@@ -1,7 +1,7 @@
 from rest_framework import viewsets, filters
 from src.models import Location
 from .serializers import LocationSerializer
-from rest_framework.response import Response
+from django.shortcuts import render
 
 class LocationViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Location.objects.all()
@@ -21,4 +21,6 @@ class LocationViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(dog_swimming=Location.dog_swimming_choices[1][1])
 
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        context = {'location_data': serializer.data}
+
+        return render(request, 'src/locations.html', context)
